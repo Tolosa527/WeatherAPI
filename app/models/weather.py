@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 import requests
 import settings
+import datetime
 
 class Weather(BaseModel):
     city: str
@@ -12,28 +13,64 @@ class Weather(BaseModel):
             response = requests.get(
                 f'{settings.OPENWEATHER_API_URL}?q={self.city},{self.country}&appid={settings.API_ID}'
             )
-            json_response = response.json()
-
-            result_data['local_name'] = "{},{}".format(
-                json_response['name'],json_response['sys'].get('country')
-            )
-            result_data['temperature'] = self.__from_f_to_c(
-                json_response['main'].get('temp')
-            )
-            # result_data['wind'] =
-            # result_data['cloudiness'] =
-            # result_data['pressure'] =
-            # result_data['humidity'] =
-            # result_data['sunrise'] =
-            # result_data['sunset'] =
-            # result_data['geo_coordinates'] =
-            # result_data['requested_time'] =
-
-
+            result_data = self.__make_payload_response(response.json())
         except Exception as e:
             raise e
-
         return result_data
 
     def __from_f_to_c(self, temperature):
         return temperature - 273.15
+
+    def __make_payload_response(self, json_object):
+
+        payload = {}
+
+        payload['local_name'] = "{},{}".format(
+            json_object['name'],json_object['sys'].get('country')
+        )
+        payload['temperature'] = self.__from_f_to_c(
+            json_object['main'].get('temp')
+        )
+        payload['wind'] = "{},{} m/s,{}".format(
+            "Gentle breeze", # I have to replace this line
+            json_object['wind'].get('speed'),
+            self.__get_direction(json_object['wind'].get('deg'))
+        )
+        payload['pressure'] = "{} hpa".format(
+            json_object['main'].get('pressure')
+        )
+        payload['humidity'] = "{} %".format(
+            json_object['main'].get('humidity')
+        )
+        payload['sunrise'] = "{}".format(
+            self.__get_time(json_object['sys'].get('sunrise'))
+        )
+        payload['sunset'] = "{}".format(
+            self.__get_time(json_object['sys'].get('sunset'))
+        )
+        payload['geo_coordinates'] = "[{},{}]".format(
+            json_object['coord'].get('lon'),
+            json_object['coord'].get('lat')
+        )
+        payload['requested_time'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        payload['cloudiness'] = None # I have to replace this
+
+        return payload
+
+    def __get_direction(self, degree):
+        result = ''
+        if   degree > 337.5 : result = 'Northerly'
+        elif degree > 292.5 : result = 'North Westerly'
+        elif degree > 247.5 : result = 'Westerly'
+        elif degree > 202.5 : result = 'South Westerly'
+        elif degree > 157.5 : result = 'Southerly'
+        elif degree > 122.5 : result = 'South Easterly'
+        elif degree > 67.5  : result = 'Easterly'
+        elif degree > 22.5  : result = 'North Easterly'
+        else: result = 'Northerly'
+        return result
+
+    def __get_time(self, data):
+        return  datetime.datetime.fromtimestamp(
+                data
+                ).strftime('%H:%M')
