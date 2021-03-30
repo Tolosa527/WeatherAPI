@@ -3,7 +3,7 @@ from typing import List, Optional
 
 class Location(BaseModel):
     city: str
-    country : str
+    country : Optional[str]
 
 class WeatherResponse(BaseModel):
     local_name: str

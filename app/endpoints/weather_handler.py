@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from app.models.weather import Location,WeatherResponse
-from .views.weather_view import Weather
+from .services.weather import Weather
 
 router = APIRouter()
 
