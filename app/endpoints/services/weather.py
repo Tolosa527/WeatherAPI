@@ -10,11 +10,11 @@ class Weather():
 
     def get_from_open_weather(self):
         result_data = {}
-        print(f'{settings.OPENWEATHER_API_URL}?q={self.city},{self.country}&appid={settings.API_ID}')
+        url =  f'{settings.OPENWEATHER_API_URL}?q={self.city},'
+        url += f'{self.country}' if self.country else ''
+        url += f'&appid={settings.API_ID}'
         try:
-            response = requests.get(
-                f'{settings.OPENWEATHER_API_URL}?q={self.city},{self.country}&appid={settings.API_ID}'
-            )
+            response = requests.get(url)
             result_data = self.__make_payload_response(response.json())
         except Exception as e:
             raise e
