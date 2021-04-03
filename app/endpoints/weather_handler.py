@@ -33,9 +33,16 @@ async def Wheater_by_city_state(
             if not redis_error:
                 client.set(f'{location.city}', result_json,ex=EXPIRATION_TIME)
                 print(f'THIS DATA WAS SAVED IN CACHE:\n{result_json}')
+        except ValueError as e:
+            print(e)
+            raise HTTPException(
+                status_code=404,
+                detail='data not found'
+            )
         except Exception as e:
+            print(e)
             raise HTTPException(
                 status_code=500,
-                detail='Error'
+                detail='Connection error'
             )
     return result

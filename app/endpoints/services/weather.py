@@ -14,10 +14,13 @@ class Weather():
         url += f'{self.country}' if self.country else ''
         url += f'&appid={settings.API_ID}'
         try:
-            response = requests.get(url)
+            response = requests.get()
+            if not response:
+                raise ValueError
             result_data = self.__make_payload_response(response.json())
         except Exception as e:
-            raise e
+            print(e)
+            raise
         return result_data
 
     def __from_f_to_c(self, temperature):
