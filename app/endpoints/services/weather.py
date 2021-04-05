@@ -14,7 +14,7 @@ class Weather():
         url += f'{self.country}' if self.country else ''
         url += f'&appid={settings.API_ID}'
         try:
-            response = requests.get()
+            response = requests.get(url)
             if not response:
                 raise ValueError
             result_data = self.__make_payload_response(response.json())

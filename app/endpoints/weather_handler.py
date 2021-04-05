@@ -23,26 +23,29 @@ async def Wheater_by_city_state(
             return cache_data
     except redis_exceptions.ConnectionError as redis_error:
         print(f'[WARNING] - ERROR TRYING TO GET INFO FROM CACHE: {redis_error}')
-        try:
-            weahter_instance = Weather(
-                city=location.city,
-                country=location.country
-            )
-            result = weahter_instance.get_from_open_weather()
-            result_json = json.dumps(result)
-            if not redis_error:
+    try:
+        weahter_instance = Weather(
+            city=location.city,
+            country=location.country
+        )
+        result = weahter_instance.get_from_open_weather()
+        result_json = json.dumps(result)
+        if result:
+            try:
                 client.set(f'{location.city}', result_json,ex=EXPIRATION_TIME)
                 print(f'THIS DATA WAS SAVED IN CACHE:\n{result_json}')
-        except ValueError as e:
-            print(e)
-            raise HTTPException(
-                status_code=404,
-                detail='data not found'
-            )
-        except Exception as e:
-            print(e)
-            raise HTTPException(
-                status_code=500,
-                detail='Connection error'
-            )
+            except redis_exceptions.ConnectionError as redis_error:
+                print(f'[WARNING] - ERROR TRYING TO GET INFO FROM CACHE: {redis_error}')
+    except ValueError as e:
+        print(e)
+        raise HTTPException(
+            status_code=404,
+            detail='data not found'
+        )
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=500,
+            detail='Connection error'
+        )
     return result
