@@ -1,10 +1,10 @@
-from fastapi import FastAPI
-from app.api import api_router
 import settings
+from app.api import api_router
+from fastapi import FastAPI
 
 api = FastAPI(
     title=settings.PROJECT_NAME,
-    version='0.0.1',
+    version=settings.VERSION,
     openapi_url= f"{settings.API_VERSION}/openapi.json"
 )
 

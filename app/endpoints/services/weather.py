@@ -1,6 +1,6 @@
+import datetime
 import requests
 import settings
-import datetime
 
 class Weather():
 

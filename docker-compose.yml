@@ -2,16 +2,25 @@ version: '2'
 
 services:
     python:
-        build: 
+        build:
             context: .
             dockerfile: app.dockerfile
-        ports: 
+        environment:
+            API_ID: 1508a9a4840a5574c822d70ca2132032
+            API_VERSION: /api/v1
+            OPENWEATHER_API_URL: http://api.openweathermap.org/data/2.5/weather
+            PROJECT_NAME: WeatherAPI
+            REDIS_HOST: redis
+            REDIS_PORT: 6379
+            REDIS_EXPIRATION_TIME: 120
+            VERSION: 0.1
+        ports:
             - 3000:8080
-        networks: 
+        networks:
             - wheaterapp
     redis:
         image: redis
-        networks: 
+        networks:
             - wheaterapp
 networks:
     wheaterapp:
