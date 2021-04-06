@@ -1,13 +1,14 @@
-import redis
 import json
-from fastapi import APIRouter, Depends
-from app.models.weather import Location,WeatherResponse
-from .services.weather import Weather
+import redis
+import settings
 from .services.cache_handler import get_redis_client
+from .services.weather import Weather
+from app.models.weather import Location,WeatherResponse
+from fastapi import APIRouter, Depends
+
+expiration_time = settings.REDIS_EXPIRATION_TIME
 
 router = APIRouter()
-
-EXPIRATION_TIME = 60*5 # five minutes
 
 @router.get('/', response_model=WeatherResponse)
 async def Wheater_by_city_state(
@@ -27,7 +28,7 @@ async def Wheater_by_city_state(
         result = weahter_instance.get_from_open_weather()
         result_json = json.dumps(result)
         print(f'THIS DATA WAS SAVED IN CACHE:\n{result_json}')
-        client.set(f'{location.city}', result_json,ex=EXPIRATION_TIME)
+        client.set(f'{location.city}', result_json,ex=expiration_time)
     except Exception as e:
         print(e)
     return result

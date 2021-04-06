@@ -1,5 +1,6 @@
 import redis
+import settings
 
 def get_redis_client():
-    client = redis.Redis(host='127.0.0.1', port=6379)
+    client = redis.Redis(host=settings.REDIS_HOST, port=settings.REDIS_PORT)
     return client
