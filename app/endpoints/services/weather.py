@@ -25,7 +25,9 @@ class Weather():
 
 
     def __from_f_to_c(self, temperature):
-        return temperature - 273.15
+        result = temperature - 273.15
+        result = round(result, ndigits=1)
+        return result
 
 
     def __make_payload_response(self, json_object):

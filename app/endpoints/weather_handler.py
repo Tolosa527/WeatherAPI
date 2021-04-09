@@ -6,6 +6,7 @@ from .services.weather import Weather
 from app.models.weather import Location,WeatherResponse
 from fastapi import APIRouter, Depends, HTTPException
 from redis import exceptions
+from termcolor import colored
 
 expiration_time = settings.REDIS_EXPIRATION_TIME
 
@@ -20,11 +21,14 @@ async def Wheater_by_city_state(
     try:
         if client.get(f'{location.city}'):
             cache_data = json.loads(client.get(location.city))
-            print(f'DATA FROM CACHE:\n{cache_data}')
+            print(colored(f'DATA FROM CACHE:\n{cache_data}', color='green'))
             return cache_data
     except exceptions.ConnectionError as e:
-        print('[Warning]-Error occurs trying to get from the cache')
-
+        print('{} Error occurs trying to get data from cache: {}'.format(
+                colored('[WARNING]', color='yellow'),
+                str(e)
+            )
+        )
     try:
         weahter_instance = Weather(
             city=location.city,
@@ -33,13 +37,20 @@ async def Wheater_by_city_state(
         result = await weahter_instance.get_from_open_weather()
         result_json = json.dumps(result)
     except Exception as e:
-        print(e)
+        print('{} Error traying to get from OPEN weather: {}'.format(
+            colored('[ERROR]', color='red'),
+            str(e)
+        ))
         raise HTTPException(500)
 
     try:
         client.set(f'{location.city}', result_json,ex=expiration_time)
-        print(f'THIS DATA WAS SAVED IN CACHE:\n{result_json}')
+        print(colored(f'THIS DATA WAS SAVED IN CACHE:\n{result_json}', color='green'))
     except exceptions.ConnectionError as e:
-        print('[Warning]-Error occurs trying to save in cache')
+        print('{} Error occurs trying to save in cache: {}'.format(
+                colored('[WARNING]', color='yellow'),
+                str(e)
+            )
+        )
 
     return result
