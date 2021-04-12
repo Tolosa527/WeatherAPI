@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from redis import exceptions
 from termcolor import colored
 
-expiration_time = settings.REDIS_EXPIRATION_TIME
+EXPIRATION_TIME = settings.REDIS_EXPIRATION_TIME
 
 router = APIRouter()
 
@@ -36,15 +36,21 @@ async def Wheater_by_city_state(
         )
         result = await weahter_instance.get_from_open_weather()
         result_json = json.dumps(result)
+    except KeyError as e:
+        print('{} Error traying to get from OPEN weather: {}'.format(
+            colored('[ERROR]', color='red'),
+            str(e)
+        ))
+        raise HTTPException(404, detail='City not found')
     except Exception as e:
         print('{} Error traying to get from OPEN weather: {}'.format(
             colored('[ERROR]', color='red'),
             str(e)
         ))
-        raise HTTPException(500)
+        raise HTTPException(500, detail='Internal Server Error')
 
     try:
-        client.set(f'{location.city}', result_json,ex=expiration_time)
+        client.set(f'{location.city}', result_json, ex=EXPIRATION_TIME)
         print(colored(f'THIS DATA WAS SAVED IN CACHE:\n{result_json}', color='green'))
     except exceptions.ConnectionError as e:
         print('{} Error occurs trying to save in cache: {}'.format(
@@ -52,5 +58,4 @@ async def Wheater_by_city_state(
                 str(e)
             )
         )
-
     return result

@@ -11,16 +11,18 @@ class Weather():
 
     async def get_from_open_weather(self):
         result_data = {}
-        url =  f'{settings.OPENWEATHER_API_URL}?q={self.city},'
-        url += f'{self.country}' if self.country else None
+        url =  f'{settings.OPENWEATHER_API_URL}?q={self.city},{self.country}'
         url += f'&appid={settings.API_ID}'
         try:
             async with httpx.AsyncClient() as client:
                 print(f'[Request]: {url}')
                 response = await client.get(url)
+                print(response.json())
                 result_data = self.__make_payload_response(response.json())
+        except KeyError as e:
+            raise KeyError
         except Exception as e:
-            raise e
+            raise Exception
         return result_data
 
 
@@ -82,6 +84,4 @@ class Weather():
 
 
     def __get_time(self, data):
-        return  datetime.datetime.fromtimestamp(
-                data
-                ).strftime('%H:%M')
+        return  datetime.datetime.fromtimestamp(data).strftime('%H:%M')
