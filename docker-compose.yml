@@ -7,6 +7,7 @@ services:
             dockerfile: app.dockerfile
         environment:
             API_ID: 1508a9a4840a5574c822d70ca2132032
+            API_TOKEN: 3b719353762f7ddfc080e13556d248e8d8af1a63590b6d17738e4f57ac18a5d1
             API_VERSION: /api/v1
             OPENWEATHER_API_URL: http://api.openweathermap.org/data/2.5/weather
             PROJECT_NAME: WeatherAPI

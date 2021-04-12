@@ -3,8 +3,8 @@ import redis
 import settings
 from .services.cache_handler import get_redis_client
 from .services.weather import Weather
-from app.models.weather import Location,WeatherResponse
-from fastapi import APIRouter, Depends, HTTPException
+from app.models.weather import Location,WeatherResponse, Token
+from fastapi import APIRouter, Depends, HTTPException, status
 from redis import exceptions
 from termcolor import colored
 
@@ -15,9 +15,15 @@ router = APIRouter()
 @router.get('/', response_model=WeatherResponse)
 async def Wheater_by_city_state(
         location: Location = Depends(),
-        client: redis = Depends(get_redis_client)
+        client: redis = Depends(get_redis_client),
+        token: Token = Depends() 
     ):
     result = {}
+    if settings.API_TOKEN != token.token_id:
+        raise HTTPException(
+            status.HTTP_401_UNAUTHORIZED,
+            detail='Incorrect token authorization'
+        )
     try:
         if client.get(f'{location.city}'):
             cache_data = json.loads(client.get(location.city))
