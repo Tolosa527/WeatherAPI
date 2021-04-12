@@ -16,3 +16,6 @@ class WeatherResponse(BaseModel):
     geo_coordinates: str
     requested_time: str
     cloudiness: str
+
+class Token(BaseModel):
+    token_id: str
