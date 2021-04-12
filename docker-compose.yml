@@ -15,7 +15,7 @@ services:
             REDIS_EXPIRATION_TIME: 120
             VERSION: 0.1
         ports:
-            - 3000:8080
+            - 3000:8000
         networks:
             - wheaterapp
     redis:

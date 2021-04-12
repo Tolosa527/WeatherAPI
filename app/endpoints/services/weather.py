@@ -1,6 +1,7 @@
 import datetime
 import requests
 import settings
+import httpx
 
 class Weather():
 
@@ -8,20 +9,28 @@ class Weather():
         self.country = country,
         self.city = city
 
-    def get_from_open_weather(self):
+    async def get_from_open_weather(self):
         result_data = {}
-        url =  f'{settings.OPENWEATHER_API_URL}?q={self.city},'
-        url += f'{self.country}' if self.country else ''
+        url =  f'{settings.OPENWEATHER_API_URL}?q={self.city},{self.country}'
         url += f'&appid={settings.API_ID}'
         try:
-            response = requests.get(url)
-            result_data = self.__make_payload_response(response.json())
+            async with httpx.AsyncClient() as client:
+                print(f'[Request]: {url}')
+                response = await client.get(url)
+                print(response.json())
+                result_data = self.__make_payload_response(response.json())
+        except KeyError as e:
+            raise KeyError
         except Exception as e:
-            raise e
+            raise Exception
         return result_data
 
+
     def __from_f_to_c(self, temperature):
-        return temperature - 273.15
+        result = temperature - 273.15
+        result = round(result, ndigits=1)
+        return result
+
 
     def __make_payload_response(self, json_object):
 
@@ -59,6 +68,7 @@ class Weather():
 
         return payload
 
+
     def __get_direction(self, degree):
         result = ''
         if   degree > 337.5 : result = 'Northerly'
@@ -72,7 +82,6 @@ class Weather():
         else: result = 'Northerly'
         return result
 
+
     def __get_time(self, data):
-        return  datetime.datetime.fromtimestamp(
-                data
-                ).strftime('%H:%M')
+        return  datetime.datetime.fromtimestamp(data).strftime('%H:%M')
