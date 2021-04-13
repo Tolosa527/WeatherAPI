@@ -11,3 +11,4 @@ REDIS_PORT              = variables.get('REDIS_PORT', None)
 REDIS_EXPIRATION_TIME   = variables.get('REDIS_EXPIRATION_TIME', None)
 VERSION                 = variables.get('VERSION', None)
 API_TOKEN               = variables.get('API_TOKEN', None)
+METRICS_LOG             = False

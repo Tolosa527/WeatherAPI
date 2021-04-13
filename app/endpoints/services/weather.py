@@ -1,6 +1,9 @@
 import datetime
 import settings
 import httpx
+from app.endpoints.services import metrics
+from termcolor import colored
+
 
 class Weather():
 
@@ -14,14 +17,26 @@ class Weather():
         url += f'&appid={settings.API_ID}'
         try:
             async with httpx.AsyncClient() as client:
-                print(f'[Request]: {url}')
+                print('{} {}'.format(
+                    colored("[REQUEST]", color="green"),
+                    url
+                ))
+                if (settings.METRICS_LOG):
+                    response = await metrics.response_time(client, url)
                 response = await client.get(url)
-                print(response.json())
+                print('{} {}'.format(
+                    colored("[RESPONSE]", color="green"),
+                    response.json()
+                ))
                 result_data = self.__make_payload_response(response.json())
-        except KeyError as e:
-            raise KeyError
-        except Exception as e:
-            raise Exception
+        except KeyError as error:
+            raise KeyError(
+                str(error)
+            )
+        except Exception as error:
+            raise Exception(
+                str(error)
+            )
         return result_data
 
 
