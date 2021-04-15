@@ -37,7 +37,7 @@ async def Wheater_by_city_state(
                 colored('[DATA FROM CACHE]', color='green'),
                 cache_data
             ))
-            return cache_data
+            return cache_data.get('response', None)
     except exceptions.ConnectionError as e:
         print('{} Error occurs trying to get data from cache: {}'.format(
                 colored('[WARNING]', color='yellow'),

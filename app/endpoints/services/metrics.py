@@ -16,15 +16,16 @@ async def response_time(client, url):
             colored(response_time, color='green')
         ))
 
-        return response
+        return {
+        'response': response,
+        'response_time': response_time
+    }
 
 def cache_response_time(client, city):
     response = {}
     t0 = 0
     response_time = 0
     
-    #json.loads(client.get(location.city))
-
     t0 = datetime.datetime.now()
     response = client.get(city)
     response_time = datetime.datetime.now() - t0
@@ -34,4 +35,7 @@ def cache_response_time(client, city):
             colored(response_time, color='green')
         ))
 
-    return response
+    return {
+        'response': response,
+        'response_time': response_time
+    }
