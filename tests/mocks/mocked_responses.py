@@ -1,10 +1,8 @@
 
 class Mocks_responses():
-
-    def __init__(self):
-        pass
-
-    def get_openWeather_Response(self):
+    
+    @classmethod
+    async def get_openWeather_Response(cls):
         return {
             'coord': {'lon': -59.1357, 'lat': -37.3283},
             'weather': [{'id': 800, 'main': 'Clear', 'description': 'clear sky', 'icon': '01d'}],
@@ -17,7 +15,9 @@ class Mocks_responses():
             'timezone': -10800, 'id': 3427833, 'name': 'Tandil', 'cod': 200
         }
 
-    def make_payload_response_mocked(self):
+
+    @classmethod
+    def make_payload_response_mocked(cls):
         return {
             'local_name': 'Tandil,AR',
             'temperature': 16.2,

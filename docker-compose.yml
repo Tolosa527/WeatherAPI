@@ -15,6 +15,7 @@ services:
             REDIS_PORT: 6379
             REDIS_EXPIRATION_TIME: 120
             VERSION: 0.1
+            DEBUG_MODE: True
         ports:
             - 3000:8000
         networks:

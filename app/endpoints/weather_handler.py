@@ -7,6 +7,7 @@ from app.models.weather import Location,WeatherResponse, Token
 from fastapi import APIRouter, Depends, HTTPException, status
 from redis import exceptions
 from termcolor import colored
+from app.endpoints.services import metrics
 
 EXPIRATION_TIME = settings.REDIS_EXPIRATION_TIME
 
@@ -26,8 +27,16 @@ async def Wheater_by_city_state(
         )
     try:
         if client.get(f'{location.city}'):
+            cache_data = {}
+            
+            if(settings.METRICS_LOG):
+                cache_data = metrics.cache_response_time(client, location.city)
+            
             cache_data = json.loads(client.get(location.city))
-            print(colored(f'DATA FROM CACHE:\n{cache_data}', color='green'))
+            print('{}{}'.format(
+                colored('[DATA FROM CACHE]', color='green'),
+                cache_data
+            ))
             return cache_data
     except exceptions.ConnectionError as e:
         print('{} Error occurs trying to get data from cache: {}'.format(
@@ -42,22 +51,25 @@ async def Wheater_by_city_state(
         )
         result = await weahter_instance.get_from_open_weather()
         result_json = json.dumps(result)
-    except KeyError as e:
+    except KeyError as error:
         print('{} Error traying to get from OPEN weather: {}'.format(
             colored('[ERROR]', color='red'),
-            str(e)
+            error
         ))
         raise HTTPException(404, detail='City not found')
-    except Exception as e:
+    except Exception as error:
         print('{} Error traying to get from OPEN weather: {}'.format(
             colored('[ERROR]', color='red'),
-            str(e)
+            error
         ))
         raise HTTPException(500, detail='Internal Server Error')
 
     try:
         client.set(f'{location.city}', result_json, ex=EXPIRATION_TIME)
-        print(colored(f'THIS DATA WAS SAVED IN CACHE:\n{result_json}', color='green'))
+        print('{}{}'.format(
+                colored('[SAVED IN CACHE]', color='green'),
+                result_json
+            ))
     except exceptions.ConnectionError as e:
         print('{} Error occurs trying to save in cache: {}'.format(
                 colored('[WARNING]', color='yellow'),
