@@ -3,20 +3,20 @@ import json
 from termcolor import colored
 
 async def response_time(client, url):
-        response = {}
-        t0 = 0
-        response_time = 0
+    response = {}
+    t0 = 0
+    response_time = 0
 
-        t0 = datetime.datetime.now()
-        response = await client.get(url)
-        response_time = datetime.datetime.now() - t0
+    t0 = datetime.datetime.now()
+    response = await client.get(url)
+    response_time = datetime.datetime.now() - t0
 
-        print('{} Async call to OpenWeatherAPI tooks: {}'.format(
-            colored('[METRIC]', 'green'),
-            colored(response_time, color='green')
-        ))
+    print('{} Async call to OpenWeatherAPI tooks: {}'.format(
+        colored('[METRIC]', 'green'),
+        colored(response_time, color='green')
+    ))
 
-        return {
+    return {
         'response': response,
         'response_time': response_time
     }

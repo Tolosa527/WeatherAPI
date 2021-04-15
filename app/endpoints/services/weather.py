@@ -22,8 +22,10 @@ class Weather():
                     url
                 ))
                 if (settings.METRICS_LOG):
-                    response = await metrics.response_time(client, url)
-                response = await client.get(url)
+                    weather_response = await metrics.response_time(client, url)
+                    response = weather_response.get('response', None)
+                else:
+                    response = await client.get(url)
                 print('{} {}'.format(
                     colored("[RESPONSE]", color="green"),
                     response.json()

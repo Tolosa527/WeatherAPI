@@ -2,7 +2,7 @@
 class Mocks_responses():
     
     @classmethod
-    def get_openWeather_Response(cls):
+    async def get_openWeather_Response(cls):
         return {
             'coord': {'lon': -59.1357, 'lat': -37.3283},
             'weather': [{'id': 800, 'main': 'Clear', 'description': 'clear sky', 'icon': '01d'}],
