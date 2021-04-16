@@ -1,10 +1,5 @@
 # WeatherAPI v1.0
 
-## **Motivation**
-
-<br></br>
-<br></br>
-
 ## **Technologies**
 
     - PYTHON
