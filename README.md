@@ -11,7 +11,6 @@
     - FASTAPI
 
 <br></br>
-<br></br>
 
 ## **Get Started**
 
@@ -35,8 +34,6 @@ Now you have to run: `./service.sh`
 
 ## **Diagrams**
 
-<br></br>
-
 ### Flow Diagrama
 
 ![alt Flow diagram](img/Flow_diagram.png)
@@ -44,8 +41,6 @@ Now you have to run: `./service.sh`
 <br></br>
 
 ## **Response and Request examples**
-
-<br></br>
 
 Request Weather endpoint
 
