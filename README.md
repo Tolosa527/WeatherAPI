@@ -39,6 +39,8 @@ Now you have to run: `./service.sh`
 
 Request Weather endpoint
 
+`/api/v1/weather/?city=[city]&token_id=[token_id]`
+
 ![alt Request Weather info](img/request_weather_data.png)
 
 Response from Weather endpoint
