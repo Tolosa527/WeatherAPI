@@ -26,4 +26,3 @@ async def test_weather_handler():
         response = await client.get(f"/weather/?city={paris}&token_id={token}")
         assert response.status_code == 200
         assert response.json()['local_name'] == 'Paris,FR'
-        

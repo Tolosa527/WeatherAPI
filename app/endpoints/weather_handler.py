@@ -56,13 +56,13 @@ async def Wheater_by_city_state(
             colored('[ERROR]', color='red'),
             error
         ))
-        raise HTTPException(404, detail='City not found')
+        raise HTTPException(status.HTTP_404_NOT_FOUND, detail='City not found')
     except Exception as error:
         print('{} Error traying to get from OPEN weather: {}'.format(
             colored('[ERROR]', color='red'),
             error
         ))
-        raise HTTPException(500, detail='Internal Server Error')
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, detail='Internal Server Error')
 
     try:
         client.set(f'{location.city}', result_json, ex=EXPIRATION_TIME)
