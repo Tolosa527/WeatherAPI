@@ -1,9 +1,11 @@
 from pydantic import BaseModel
 from typing import Optional
 
+
 class Location(BaseModel):
     city: str
-    country : Optional[str]
+    country: Optional[str]
+
 
 class WeatherResponse(BaseModel):
     local_name: str
@@ -16,6 +18,7 @@ class WeatherResponse(BaseModel):
     geo_coordinates: str
     requested_time: str
     cloudiness: str
+
 
 class Token(BaseModel):
     token_id: str

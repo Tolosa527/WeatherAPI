@@ -1,44 +1,65 @@
 import datetime
-import settings
 import httpx
-from app.endpoints.services import metrics
+import settings
+from typing import Any, Dict
 from termcolor import colored
 
+from app.endpoints.services import metrics
 
-class Weather():
+
+class Weather:
+
+    """
+    This is the main class for weather. It provides all the functionality
+    to handle weather data
+    """
 
     def __init__(self, country, city):
-        self.country = country,
+        self.country = (country,)
         self.city = city
 
-    async def get_from_open_weather(self):
+    async def get_from_open_weather(self) -> Dict[str, Any]:
+
+        """
+            This method will return a dictionary of weather data.
+            
+                returns:
+                        wheather dictionary:
+                        {
+                            "local_name": "string",
+                            "temperature": "string",
+                            "wind": "string",
+                            "pressure": "string",
+                            "humidity": "string",
+                            "sunrise": "string",
+                            "sunset": "string",
+                            "geo_coordinates": "string",
+                            "requested_time": "string",
+                            "cloudiness": "string"
+                        }
+        """
+
         result_data = {}
-        url =  f'{settings.OPENWEATHER_API_URL}?q={self.city},{self.country}'
-        url += f'&appid={settings.API_ID}'
+        url = f"{settings.OPENWEATHER_API_URL}?q={self.city},{self.country}"
+        url += f"&appid={settings.API_ID}"
         try:
             async with httpx.AsyncClient() as client:
-                print('{} {}'.format(
-                    colored("[REQUEST]", color="green"),
-                    url
-                ))
-                if (settings.METRICS_LOG):
+                print("{} {}".format(colored("[REQUEST]", color="green"), url))
+                if settings.METRICS_LOG:
                     weather_response = await metrics.response_time(client, url)
-                    response = weather_response.get('response', None)
+                    response = weather_response.get("response", None)
                 else:
                     response = await client.get(url)
-                print('{} {}'.format(
-                    colored("[RESPONSE]", color="green"),
-                    response.json()
-                ))
+                print(
+                    "{} {}".format(
+                        colored("[RESPONSE]", color="green"), response.json()
+                    )
+                )
                 result_data = self.__make_payload_response(response.json())
         except KeyError as error:
-            raise KeyError(
-                str(error)
-            )
+            raise KeyError(str(error))
         except Exception as error:
-            raise Exception(
-                str(error)
-            )
+            raise Exception(str(error))
         return result_data
 
 
@@ -48,56 +69,81 @@ class Weather():
         return result
 
 
-    def __make_payload_response(self, json_object):
+    def __make_payload_response(self, json_object) -> Dict[str, Any]:
+
+        """
+            Make payload response is a private method for creating
+            the response object.
+
+            Arguments: Json Object
+
+            Return: Python Dictionary
+        """
 
         payload = {}
 
-        payload['local_name'] = "{},{}".format(
-            json_object['name'],json_object['sys'].get('country')
+        payload["local_name"] = "{},{}".format(
+            json_object["name"], json_object["sys"].get("country")
         )
-        payload['temperature'] = self.__from_f_to_c(
-            json_object['main'].get('temp')
+        payload["temperature"] = self.__from_f_to_c(json_object["main"].get("temp"))
+        payload["wind"] = "{},{} m/s,{}".format(
+            "Gentle breeze",  # I have to replace this line
+            json_object["wind"].get("speed"),
+            self.__get_direction(json_object["wind"].get("deg")),
         )
-        payload['wind'] = "{},{} m/s,{}".format(
-            "Gentle breeze", # I have to replace this line
-            json_object['wind'].get('speed'),
-            self.__get_direction(json_object['wind'].get('deg'))
+        payload["pressure"] = "{} hpa".format(json_object["main"].get("pressure"))
+        payload["humidity"] = "{} %".format(json_object["main"].get("humidity"))
+        payload["sunrise"] = "{}".format(
+            self.__get_time(json_object["sys"].get("sunrise"))
         )
-        payload['pressure'] = "{} hpa".format(
-            json_object['main'].get('pressure')
+        payload["sunset"] = "{}".format(
+            self.__get_time(json_object["sys"].get("sunset"))
         )
-        payload['humidity'] = "{} %".format(
-            json_object['main'].get('humidity')
+        payload["geo_coordinates"] = "[{},{}]".format(
+            json_object["coord"].get("lon"), json_object["coord"].get("lat")
         )
-        payload['sunrise'] = "{}".format(
-            self.__get_time(json_object['sys'].get('sunrise'))
+        payload["requested_time"] = datetime.datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
         )
-        payload['sunset'] = "{}".format(
-            self.__get_time(json_object['sys'].get('sunset'))
-        )
-        payload['geo_coordinates'] = "[{},{}]".format(
-            json_object['coord'].get('lon'),
-            json_object['coord'].get('lat')
-        )
-        payload['requested_time'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        payload['cloudiness'] = '' # I have to replace this
+        payload["cloudiness"] = ""  # I have to replace this
 
         return payload
 
 
-    def __get_direction(self, degree):
-        result = ''
-        if   degree > 337.5 : result = 'Northerly'
-        elif degree > 292.5 : result = 'North Westerly'
-        elif degree > 247.5 : result = 'Westerly'
-        elif degree > 202.5 : result = 'South Westerly'
-        elif degree > 157.5 : result = 'Southerly'
-        elif degree > 122.5 : result = 'South Easterly'
-        elif degree > 67.5  : result = 'Easterly'
-        elif degree > 22.5  : result = 'North Easterly'
-        else: result = 'Northerly'
+    def __get_direction(self, degree: int) -> str:
+        """
+            This method will convert the wind direcction (Integer)
+            in a more human readable word.
+
+            Arguments: degree (int)
+
+            Return: Wind direcction (str)
+        """
+
+        result = ""
+        if degree > 337.5:
+            result = "Northerly"
+        elif degree > 292.5:
+            result = "North Westerly"
+        elif degree > 247.5:
+            result = "Westerly"
+        elif degree > 202.5:
+            result = "South Westerly"
+        elif degree > 157.5:
+            result = "Southerly"
+        elif degree > 122.5:
+            result = "South Easterly"
+        elif degree > 67.5:
+            result = "Easterly"
+        elif degree > 22.5:
+            result = "North Easterly"
+        else:
+            result = "Northerly"
         return result
 
 
-    def __get_time(self, data):
-        return  datetime.datetime.fromtimestamp(data).strftime('%H:%M')
+    def __get_time(self, data: str) -> datetime:
+        """
+        Get time it will return a datetime from the given data
+        """
+        return datetime.datetime.fromtimestamp(data).strftime("%H:%M")
