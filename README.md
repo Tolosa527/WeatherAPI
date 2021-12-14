@@ -53,13 +53,5 @@ Response from Weather endpoint
 
 ![alt Response Weather info](img/response_example.png)
 
-## **Basic Auth API**
-
-This version of the app has not so robust authentication layer. To use this app you have to use
-add in the request this api token. 
-
-**API token:** 3b719353762f7ddfc080e13556d248e8d8af1a63590b6d17738e4f57ac18a5d1
-
-<br></br>
 
 ## **Project specifications**
