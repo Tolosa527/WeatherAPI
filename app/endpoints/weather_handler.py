@@ -7,11 +7,11 @@ from redis import exceptions
 from typing import Dict
 from termcolor import colored
 
-from .services import auth
-from .services.cache_handler import get_redis_client
-from .services.weather import Weather
-from app.endpoints.services import metrics
-from app.models.weather import Location, WeatherResponse, Token
+from app.services import auth
+from app.services.cache_handler import get_redis_client
+from app.services.weather import Weather
+from app.services import metrics
+from app.models.weather import Location, WeatherResponse
 
 EXPIRATION_TIME = settings.REDIS_EXPIRATION_TIME
 
@@ -20,11 +20,10 @@ router = APIRouter()
 
 @router.post("/", response_model=WeatherResponse)
 async def Wheater_by_city_state(
-        location: Location = Depends(),
-        client: redis = Depends(get_redis_client),
-        username: str = Depends(auth.get_current_username)
-        ) -> Dict:
-    
+    location: Location = Depends(),
+    client: redis = Depends(get_redis_client),
+    username: str = Depends(auth.get_current_username),
+) -> Dict:
     result = {}
 
     try:

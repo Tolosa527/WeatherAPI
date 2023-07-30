@@ -77,7 +77,7 @@ case $option in
             docker rmi -f wheaterapi_python
             docker container rm wheaterapi_redis_1 wheaterapi_python_1
             docker-compose build
-            docker-compose up
+            docker-compose up -d
         else
             clear
             echo "${cyan}1)${reset} Running the app"
@@ -91,7 +91,7 @@ case $option in
                 1)
                     print_header
                     print_docker_is_runnnig
-                    docker-compose up
+                    docker-compose up -d
                 ;;
                 2)
                     print_header
@@ -142,7 +142,7 @@ case $option in
     2)
         print_header
         print_docker_is_runnnig
-        docker-compose up
+        docker-compose up -d
         print_docker_finish
     ;;
     3)

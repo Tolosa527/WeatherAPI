@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 
 services:
     python:
@@ -16,6 +16,9 @@ services:
             REDIS_EXPIRATION_TIME: 120
             VERSION: 0.1
             DEBUG_MODE: 1
+            DB_HOST: mongo
+            DB_PORT: 27017
+            DB_NAME: weather
         ports:
             - 3000:8000
         networks:
@@ -24,6 +27,18 @@ services:
         image: redis
         networks:
             - wheaterapp
+    mongo:
+        image: mongo
+        volumes:
+            - mongo:/data/db
+        expose:
+            - "27017"
+        networks:
+            - wheaterapp
+
 networks:
     wheaterapp:
         driver: bridge
+
+volumes:
+    mongo:

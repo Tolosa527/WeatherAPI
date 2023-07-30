@@ -4,7 +4,7 @@ import settings
 from typing import Any, Dict
 from termcolor import colored
 
-from app.endpoints.services import metrics
+from app.services import metrics
 
 
 class Weather:
@@ -19,26 +19,6 @@ class Weather:
         self.city = city
 
     async def get_from_open_weather(self) -> Dict[str, Any]:
-
-        """
-            This method will return a dictionary of weather data.
-            
-                returns:
-                        wheather dictionary:
-                        {
-                            "local_name": "string",
-                            "temperature": "string",
-                            "wind": "string",
-                            "pressure": "string",
-                            "humidity": "string",
-                            "sunrise": "string",
-                            "sunset": "string",
-                            "geo_coordinates": "string",
-                            "requested_time": "string",
-                            "cloudiness": "string"
-                        }
-        """
-
         result_data = {}
         url = f"{settings.OPENWEATHER_API_URL}?q={self.city},{self.country}"
         url += f"&appid={settings.API_ID}"
@@ -62,22 +42,19 @@ class Weather:
             raise Exception(str(error))
         return result_data
 
-
     def __from_f_to_c(self, temperature):
         result = temperature - 273.15
         result = round(result, ndigits=1)
         return result
 
-
     def __make_payload_response(self, json_object) -> Dict[str, Any]:
-
         """
-            Make payload response is a private method for creating
-            the response object.
+        Make payload response is a private method for creating
+        the response object.
 
-            Arguments: Json Object
+        Arguments: Json Object
 
-            Return: Python Dictionary
+        Return: Python Dictionary
         """
 
         payload = {}
@@ -109,15 +86,14 @@ class Weather:
 
         return payload
 
-
     def __get_direction(self, degree: int) -> str:
         """
-            This method will convert the wind direcction (Integer)
-            in a more human readable word.
+        This method will convert the wind direcction (Integer)
+        in a more human readable word.
 
-            Arguments: degree (int)
+        Arguments: degree (int)
 
-            Return: Wind direcction (str)
+        Return: Wind direcction (str)
         """
 
         result = ""
@@ -140,7 +116,6 @@ class Weather:
         else:
             result = "Northerly"
         return result
-
 
     def __get_time(self, data: str) -> datetime:
         """
